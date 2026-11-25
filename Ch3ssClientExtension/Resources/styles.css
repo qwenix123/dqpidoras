@@ -1,0 +1,568 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* ===== Базовые переменные и палитры Monet (Pixel Experience) ===== */
+#ca-panel,
+#ca-toasts {
+  --surface: #1b1c1e;
+  --surface-container: #26282c;
+  --surface-container-high: #32353b;
+  --on-surface: #e3e2e6;
+  --on-surface-variant: #c4c6d0;
+  --outline: rgba(255, 255, 255, 0.08);
+
+  --green: #c4eed0;
+  --on-green: #072711;
+  --red: #f2b8b5;
+  --on-red: #601410;
+  --gold-container: #4d3800;
+  --on-gold-container: #ffdf9e;
+
+  /* Тема по умолчанию: Pixel Blue */
+  --primary: #a8c7fa;
+  --on-primary: #062e6f;
+  --primary-container: #0842a0;
+  --on-primary-container: #d3e3fd;
+  --sq-light: #d7e3f7;
+  --sq-dark: #748cab;
+  --sq-hl: #a8c7fa;
+  --arrow-color: #a8c7fa;
+}
+
+#ca-panel[data-theme="green"],
+#ca-toasts[data-theme="green"] {
+  --primary: #b7f397;
+  --on-primary: #0c3900;
+  --primary-container: #205107;
+  --on-primary-container: #d2f8be;
+  --sq-light: #e2ebd8;
+  --sq-dark: #7d9670;
+  --sq-hl: #b7f397;
+  --arrow-color: #9be07a;
+}
+
+#ca-panel[data-theme="purple"],
+#ca-toasts[data-theme="purple"] {
+  --primary: #d0bcff;
+  --on-primary: #381e72;
+  --primary-container: #4f378b;
+  --on-primary-container: #eaddff;
+  --sq-light: #e9e2f5;
+  --sq-dark: #8878a8;
+  --sq-hl: #d0bcff;
+  --arrow-color: #d0bcff;
+}
+
+#ca-panel[data-theme="gold"],
+#ca-toasts[data-theme="gold"] {
+  --primary: #ffdf9e;
+  --on-primary: #3f2e00;
+  --primary-container: #5b4300;
+  --on-primary-container: #ffdf9e;
+  --sq-light: #f0e4ce;
+  --sq-dark: #a68c60;
+  --sq-hl: #ffdf9e;
+  --arrow-color: #f5c25b;
+}
+
+/* ===== Основная панель ===== */
+#ca-panel {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  width: 344px;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: 28px;
+  color: var(--on-surface);
+  font-family: 'Google Sans', 'Product Sans', 'Plus Jakarta Sans', Roboto, sans-serif;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+  z-index: 2147483647;
+  user-select: none;
+  overflow: hidden;
+  animation: caIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+  transition: width 0.25s cubic-bezier(0.2, 0, 0, 1), border-radius 0.25s ease;
+}
+
+@keyframes caIn {
+  from { transform: translateY(-12px) scale(0.96); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+#ca-panel.minimized {
+  width: 224px;
+  border-radius: 24px;
+}
+#ca-panel.minimized .ca-body {
+  display: none;
+}
+
+/* ===== Шапка ===== */
+.ca-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  cursor: move;
+}
+
+.ca-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.1px;
+}
+
+.ca-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface-container-high);
+  transition: all 0.25s ease;
+}
+
+#ca-panel.running .ca-dot {
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(196, 238, 208, 0.7);
+  animation: caPulse 1.5s infinite;
+}
+
+@keyframes caPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.65; }
+}
+
+.ca-head-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.ca-icon-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-container);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+.ca-icon-btn:hover {
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+}
+.ca-icon-btn:active {
+  transform: scale(0.92);
+}
+.ca-icon-btn.muted {
+  opacity: 0.45;
+}
+
+/* ===== Тело ===== */
+.ca-body {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== Верхний блок: мини-доска + eval-бар + инфо ===== */
+.ca-visual-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.ca-board-wrap {
+  position: relative;
+  width: 156px;
+  height: 156px;
+  border-radius: 18px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), inset 0 0 0 1px var(--outline);
+}
+
+.ca-mb-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: 100%;
+  height: 100%;
+}
+
+.ca-mb-sq {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.ca-mb-sq.lt { background: var(--sq-light); }
+.ca-mb-sq.dk { background: var(--sq-dark); }
+
+.ca-mb-sq.from::after,
+.ca-mb-sq.to::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sq-hl);
+  opacity: 0.45;
+  pointer-events: none;
+}
+.ca-mb-sq.to::after {
+  opacity: 0.68;
+}
+
+.ca-mb-pc {
+  position: relative;
+  z-index: 2;
+  font-size: 16px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.ca-mb-pc.w {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75), 0 0 1px #111;
+}
+
+.ca-mb-pc.b {
+  color: #1f1f23;
+  text-shadow: 0 0 1.5px rgba(255, 255, 255, 0.85);
+}
+
+.ca-mb-arrow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Вертикальный Eval-бар */
+.ca-evalbar {
+  width: 14px;
+  height: 156px;
+  border-radius: 9999px;
+  background: #2f3136;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px var(--outline);
+}
+
+.ca-evalfill {
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(180deg, #ffffff 0%, #dcdde2 100%);
+  border-radius: 9999px;
+  transition: height 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+
+/* Правая колонка с инфо */
+.ca-side-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ca-turn-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: var(--surface-container);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ca-turn-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+.ca-turn-pill.black .ca-turn-dot {
+  background: #1f1f23;
+  border-color: var(--on-surface-variant);
+}
+
+.ca-mini-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.ca-stat-box {
+  background: var(--surface-container);
+  border-radius: 14px;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.ca-stat-label {
+  font-size: 10px;
+  color: var(--on-surface-variant);
+}
+
+.ca-stat-val {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+.ca-stat-val.pos { color: var(--green); }
+.ca-stat-val.neg { color: var(--red); }
+
+.ca-move-pill {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  border-radius: 14px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ca-adv-tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+/* ===== Выбор режима (плитки Quick Settings) ===== */
+.ca-section-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  margin: 0 0 6px 4px;
+}
+
+.ca-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ca-mode-btn {
+  background: var(--surface-container);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 6px;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.ca-mode-btn:hover {
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+}
+.ca-mode-btn:active {
+  transform: scale(0.95);
+}
+
+.ca-mode-btn.active {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.ca-mode-btn[data-mode="autowin"].active {
+  background: var(--gold-container);
+  color: var(--on-gold-container);
+}
+
+.ca-mode-icon { font-size: 16px; }
+.ca-mode-name { font-size: 12px; font-weight: 600; }
+.ca-mode-sub { font-size: 10px; opacity: 0.78; }
+
+/* ===== Тумблеры Material You ===== */
+.ca-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ca-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-container);
+  border-radius: 18px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ca-switch-row:hover {
+  background: var(--surface-container-high);
+}
+
+.ca-switch-row input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 40px;
+  height: 22px;
+  background: var(--surface-container-high);
+  border: 2px solid var(--on-surface-variant);
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ca-switch-row input::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  background: var(--on-surface-variant);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.ca-switch-row input:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.ca-switch-row input:checked::after {
+  left: 19px;
+  width: 14px;
+  height: 14px;
+  background: var(--on-primary);
+}
+
+/* ===== Кнопка запуска ===== */
+.ca-start-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-primary);
+  background: var(--primary);
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s, background 0.2s, color 0.2s;
+}
+.ca-start-btn:hover { filter: brightness(1.06); }
+.ca-start-btn:active { transform: scale(0.98); }
+.ca-start-btn.running {
+  background: var(--red);
+  color: var(--on-red);
+}
+
+/* ===== Статус-капсула ===== */
+.ca-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  background: var(--surface-container);
+  border-radius: 9999px;
+  padding: 7px 14px;
+}
+
+.ca-status-txt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ca-moves-count {
+  font-size: 11px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ===== Стрелка на большой доске ===== */
+#ca-board-arrow {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483646;
+  animation: caArrowIn 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes caArrowIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== Android Material You Snackbar (Toasts) ===== */
+#ca-toasts {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  z-index: 2147483647;
+  pointer-events: none;
+}
+
+.ca-toast {
+  background: #2b2d31;
+  color: var(--on-surface);
+  border: 1px solid var(--outline);
+  border-radius: 9999px;
+  padding: 10px 18px;
+  font-family: 'Google Sans', 'Plus Jakarta Sans', Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: caToastUp 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.ca-toast-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+.ca-toast.warn .ca-toast-dot { background: #ffdf9e; }
+.ca-toast.err .ca-toast-dot { background: var(--red); }
+
+@keyframes caToastUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}

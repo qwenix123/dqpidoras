@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ch3ss Client</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body data-theme="mono">
+  <div class="ca-app">
+    <!-- Шапка -->
+    <header class="ca-head">
+      <div class="ca-title">
+        <img src="icon.png" class="ca-header-icon" alt="Logo" />
+        <span class="ca-dot"></span>
+        <span>Ch3ss Client</span>
+      </div>
+      <div class="ca-head-btns">
+        <button class="ca-icon-btn" id="ca-open-tab" title="Открыть Chess.com">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
+        <button class="ca-icon-btn" id="ca-theme-btn" title="Сменить палитру">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.8 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H17c2.8 0 5-2.2 5-5 0-6.1-4.5-10.4-10-10.4z"></path>
+          </svg>
+        </button>
+        <button class="ca-icon-btn" id="ca-sound-btn" title="Звуки">
+          <svg id="ca-sound-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Вкладки (Tabs) -->
+    <nav class="ca-tabs">
+      <button class="ca-tab-btn active" data-tab="game">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="3" y1="15" x2="21" y2="15"></line>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+          <line x1="15" y1="3" x2="15" y2="21"></line>
+        </svg>
+        <span>Игра</span>
+      </button>
+      <button class="ca-tab-btn" data-tab="human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <polyline points="16 11 18 13 22 9"></polyline>
+        </svg>
+        <span>Humanizer</span>
+      </button>
+      <button class="ca-tab-btn" data-tab="configs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Configs</span>
+      </button>
+    </nav>
+
+    <main class="ca-body">
+      <!-- ================= ВКЛАДКА 1: ИГРА ================= -->
+      <div class="ca-tab-pane active" id="pane-game">
+        <!-- Мини-доска + Eval-бар + Сводка -->
+        <section class="ca-visual-row">
+          <div class="ca-board-wrap">
+            <div class="ca-mb-grid" id="ca-mb-grid"></div>
+            <svg class="ca-mb-arrow" id="ca-mb-arrow" viewBox="0 0 156 156"></svg>
+          </div>
+
+          <div class="ca-evalbar" title="Оценка позиции">
+            <div class="ca-evalfill" id="ca-evalfill"></div>
+          </div>
+
+          <div class="ca-side-info">
+            <div class="ca-turn-pill" id="ca-turn-pill">
+              <span class="ca-turn-dot"></span>
+              <span id="ca-turn-txt">Ход белых</span>
+            </div>
+
+            <div class="ca-mini-stats">
+              <div class="ca-stat-box">
+                <div class="ca-stat-label">Оценка</div>
+                <div class="ca-stat-val" id="ca-eval">0.00</div>
+              </div>
+              <div class="ca-stat-box">
+                <div class="ca-stat-label">Глубина</div>
+                <div class="ca-stat-val" id="ca-depth">—</div>
+              </div>
+            </div>
+
+            <div class="ca-move-pill">
+              <span id="ca-move">—</span>
+              <span class="ca-adv-tag" id="ca-adv-tag">Равно</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- График оценки партии -->
+        <section class="ca-graph-card">
+          <div class="ca-graph-head">
+            <span class="ca-graph-title">График оценки партии</span>
+            <div class="ca-graph-right">
+              <span class="ca-graph-meta" id="ca-graph-meta">0.00</span>
+              <button class="ca-chip-btn" id="ca-graph-reset" title="Очистить график">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="ca-graph-wrap">
+            <svg id="ca-graph-svg" viewBox="0 0 300 66" preserveAspectRatio="none"></svg>
+          </div>
+        </section>
+
+        <!-- Выбор режима игры -->
+        <section>
+          <div class="ca-section-label">Режим игры</div>
+          <div class="ca-modes">
+            <button class="ca-mode-btn" data-mode="legit">
+              <span class="ca-mode-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </span>
+              <span class="ca-mode-name">Легит</span>
+              <span class="ca-mode-sub">~1800</span>
+            </button>
+
+            <button class="ca-mode-btn" data-mode="pro">
+              <span class="ca-mode-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </span>
+              <span class="ca-mode-name">Про</span>
+              <span class="ca-mode-sub">~2600</span>
+            </button>
+
+            <button class="ca-mode-btn active" data-mode="human_safe">
+              <span class="ca-mode-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <polyline points="16 11 18 13 22 9"></polyline>
+                </svg>
+              </span>
+              <span class="ca-mode-name">humen mode</span>
+              <span class="ca-mode-sub">full safe</span>
+            </button>
+
+            <button class="ca-mode-btn" data-mode="autowin">
+              <span class="ca-mode-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5z"></path>
+                </svg>
+              </span>
+              <span class="ca-mode-name">AutoWin</span>
+              <span class="ca-mode-sub">MAX</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Быстрые переключатели игры -->
+        <section class="ca-toggles">
+          <label class="ca-switch-row">
+            <span class="ca-switch-label-with-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              <span>Авто-поиск новой игры</span>
+            </span>
+            <input type="checkbox" id="ca-auto-queue" checked />
+          </label>
+          <label class="ca-switch-row">
+            <span class="ca-switch-label-with-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+              <span>Стрелка на доске</span>
+            </span>
+            <input type="checkbox" id="ca-show-arrow" checked />
+          </label>
+        </section>
+      </div>
+
+      <!-- ================= ВКЛАДКА 2: HUMANIZER ================= -->
+      <div class="ca-tab-pane" id="pane-human">
+        <!-- Паттерн и частота ошибок -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Частота и шаг ошибок</span>
+            <span class="ca-badge" id="ca-pattern-badge">Шанс: 15%</span>
+          </div>
+
+          <div class="ca-pattern-grid">
+            <button class="ca-pat-btn active" data-pat="chance">
+              <span class="ca-pat-name">Шанс (%)</span>
+            </button>
+            <button class="ca-pat-btn" data-pat="every2">
+              <span class="ca-pat-name">Каждый 2-й</span>
+            </button>
+            <button class="ca-pat-btn" data-pat="every3">
+              <span class="ca-pat-name">Каждый 3-й</span>
+            </button>
+            <button class="ca-pat-btn" data-pat="every4">
+              <span class="ca-pat-name">Каждый 4-й</span>
+            </button>
+            <button class="ca-pat-btn" data-pat="everyN">
+              <span class="ca-pat-name">Свой шаг</span>
+            </button>
+          </div>
+
+          <!-- Слайдер шанса ошибки -->
+          <div class="ca-slider-box" id="ca-chance-box">
+            <div class="ca-slider-labels">
+              <span class="ca-slider-sub">Вероятность ошибки</span>
+              <span class="ca-slider-hint" id="ca-error-hint">Редко (~1 из 7 ходов)</span>
+            </div>
+            <input type="range" id="ca-error-rate" min="0" max="100" step="5" value="15" class="ca-slider" />
+            <div class="ca-rate-chips">
+              <button class="ca-rate-chip" data-rate="0">0% Выкл</button>
+              <button class="ca-rate-chip active" data-rate="15">15%</button>
+              <button class="ca-rate-chip" data-rate="30">30%</button>
+              <button class="ca-rate-chip" data-rate="50">50%</button>
+            </div>
+          </div>
+
+          <!-- Поле произвольного шага N -->
+          <div class="ca-step-box" id="ca-step-box" style="display:none;">
+            <div class="ca-slider-labels">
+              <span class="ca-slider-sub">Шаг ходов</span>
+              <span class="ca-slider-hint" id="ca-step-hint">Ошибаться каждый N-й ход</span>
+            </div>
+            <div class="ca-step-control">
+              <span>Каждый</span>
+              <input type="number" id="ca-error-step" min="1" max="20" value="2" class="ca-num-input" />
+              <span>-й ход</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Характер ошибки -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Как ошибаться</span>
+          </div>
+          <div class="ca-types-grid">
+            <button class="ca-type-btn active" data-type="inaccuracy" title="2-3 линия. Потеря 0.3-0.8 пешки. Естественный человеческий ход">
+              <span class="ca-type-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="22" y1="12" x2="18" y2="12"></line>
+                  <line x1="6" y1="12" x2="2" y2="12"></line>
+                  <line x1="12" y1="6" x2="12" y2="2"></line>
+                  <line x1="12" y1="22" x2="12" y2="18"></line>
+                </svg>
+              </span>
+              <span class="ca-type-name">Неточность</span>
+              <span class="ca-type-sub">2-3 линия</span>
+            </button>
+            <button class="ca-type-btn" data-type="mistake" title="3-5 линия. Потеря 1-2.5 пешек. Заметный позиционный просчёт">
+              <span class="ca-type-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </span>
+              <span class="ca-type-name">Ошибка</span>
+              <span class="ca-type-sub">3-5 линия</span>
+            </button>
+            <button class="ca-type-btn" data-type="blunder" title="Худшая линия. Грубый зевок или потеря фигуры">
+              <span class="ca-type-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+              </span>
+              <span class="ca-type-name">Зевок</span>
+              <span class="ca-type-sub">Худший ход</span>
+            </button>
+            <button class="ca-type-btn" data-type="mix" title="Сбалансированный стиль: 65% неточностей, 25% ошибок, 10% зевков">
+              <span class="ca-type-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 3 21 3 21 8"></polyline>
+                  <line x1="4" y1="20" x2="21" y2="3"></line>
+                  <polyline points="21 16 21 21 16 21"></polyline>
+                  <line x1="15" y1="15" x2="21" y2="21"></line>
+                  <line x1="4" y1="4" x2="9" y2="9"></line>
+                </svg>
+              </span>
+              <span class="ca-type-name">Микс</span>
+              <span class="ca-type-sub">Человечный</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Безопасность (Full Safe) -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Безопасность партии</span>
+            <span class="ca-badge safe" id="ca-safe-badge">Full Safe (+1.2)</span>
+          </div>
+
+          <div class="ca-slider-labels" style="margin-bottom: 6px;">
+            <span class="ca-slider-sub">Ошибаться только при перевесе от</span>
+          </div>
+          <div class="ca-margin-row">
+            <button class="ca-margin-btn" data-margin="0">
+              <span>0.0</span>
+              <small>Всегда</small>
+            </button>
+            <button class="ca-margin-btn" data-margin="70">
+              <span>+0.7</span>
+              <small>Легкий</small>
+            </button>
+            <button class="ca-margin-btn active" data-margin="120">
+              <span>+1.2</span>
+              <small>Full Safe</small>
+            </button>
+            <button class="ca-margin-btn" data-margin="250">
+              <span>+2.5</span>
+              <small>Разгром</small>
+            </button>
+          </div>
+
+          <label class="ca-switch-row ca-switch-small" style="margin-top: 8px;">
+            <span class="ca-switch-label-with-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <rect x="9" y="10" width="6" height="5" rx="1"></rect>
+              </svg>
+              <span>Защита от мата в 1-2 хода</span>
+            </span>
+            <input type="checkbox" id="ca-protect-mate" checked />
+          </label>
+        </section>
+
+        <!-- Время раздумий (Dynamic Timing) -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Время раздумий</span>
+          </div>
+
+          <label class="ca-switch-row ca-switch-small" style="margin-bottom: 10px;">
+            <span class="ca-switch-label-with-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Динамическое время (человечный рандом)</span>
+            </span>
+            <input type="checkbox" id="ca-dynamic-timing" checked />
+          </label>
+
+          <div class="ca-dual-sliders">
+            <div class="ca-slider-box">
+              <div class="ca-slider-labels">
+                <span class="ca-slider-sub">Мин. задержка</span>
+                <span class="ca-slider-hint" id="ca-delay-min-val">1000 мс</span>
+              </div>
+              <input type="range" id="ca-delay-min" min="200" max="3000" step="100" value="1000" class="ca-slider" />
+            </div>
+
+            <div class="ca-slider-box">
+              <div class="ca-slider-labels">
+                <span class="ca-slider-sub">Макс. задержка</span>
+                <span class="ca-slider-hint" id="ca-delay-max-val">2600 мс</span>
+              </div>
+              <input type="range" id="ca-delay-max" min="400" max="6000" step="100" value="2600" class="ca-slider" />
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= ВКЛАДКА 3: CONFIGS ================= -->
+      <div class="ca-tab-pane" id="pane-configs">
+        <!-- Экспорт и импорт файлов .cfg -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Файлы настроек (.cfg)</span>
+          </div>
+          <div class="ca-cfg-file-btns">
+            <button class="ca-action-btn primary" id="ca-cfg-export-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Экспорт .cfg</span>
+            </button>
+
+            <button class="ca-action-btn secondary" id="ca-cfg-import-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Импорт .cfg</span>
+            </button>
+            <input type="file" id="ca-cfg-file-input" accept=".cfg,.json" style="display: none;" />
+          </div>
+        </section>
+
+        <!-- Сохранение текущего профиля -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Сохранить профиль</span>
+          </div>
+          <div class="ca-cfg-save-row">
+            <input type="text" id="ca-new-cfg-name" placeholder="Название профиля..." class="ca-input" />
+            <button class="ca-save-btn" id="ca-save-cfg-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>Сохранить</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Готовые пресеты -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Готовые пресеты</span>
+          </div>
+          <div class="ca-preset-list">
+            <div class="ca-preset-item">
+              <div class="ca-preset-info">
+                <span class="ca-preset-name">humen mode (full safe)</span>
+                <span class="ca-preset-desc">Победный уровень, неточности только при перевесе</span>
+              </div>
+              <button class="ca-load-btn" data-preset="human_safe">Применить</button>
+            </div>
+
+            <div class="ca-preset-item">
+              <div class="ca-preset-info">
+                <span class="ca-preset-name">Anti-Cheat Legit</span>
+                <span class="ca-preset-desc">~1800, человеческие задержки, редкие неточности</span>
+              </div>
+              <button class="ca-load-btn" data-preset="legit">Применить</button>
+            </div>
+
+            <div class="ca-preset-item">
+              <div class="ca-preset-info">
+                <span class="ca-preset-name">AutoWin MAX</span>
+                <span class="ca-preset-desc">3000+ ELO, 0 ошибок, максимальная скорость</span>
+              </div>
+              <button class="ca-load-btn" data-preset="autowin">Применить</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Сохранённые профили пользователя -->
+        <section class="ca-card">
+          <div class="ca-card-head">
+            <span class="ca-card-title">Ваши профили</span>
+            <span class="ca-cfg-count" id="ca-cfg-count">0</span>
+          </div>
+          <div class="ca-user-cfg-list" id="ca-user-cfg-list">
+            <div class="ca-empty-cfg">Нет сохранённых профилей</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Главная кнопка запуска -->
+      <button class="ca-start-btn" id="ca-start-btn">
+        <svg id="ca-start-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span id="ca-start-txt">Запустить</span>
+      </button>
+
+      <!-- Статус-бар -->
+      <footer class="ca-status-bar">
+        <span class="ca-status-txt" id="ca-status-txt">Готов к работе</span>
+        <span class="ca-moves-count" id="ca-moves-count">Ходов: 0</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="ext-compat.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
